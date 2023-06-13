@@ -1,3 +1,4 @@
 # SOME PAYWALL BYPASS TOOL
-- ADD FORTUNE.COM: REMOVE THE PAYWALL AFTER RENDERED THE PAGE(YOU NEED TO WAIT THE PAGE FULLY RENDERED, AND THE PAYWALL WILL BE DELETED)
-- ADD ECONOMIST.COM: FORBIDDEN REQUEST THE "GETCOUNT" URL
+- a tampermonkey script to remove subscription and ads of fortune.com and economist.com paywall, for free, for yangmaoer!
+
+refer to [vivek9patel](https://github.com/vivek9patel/economist.com-unlocked)`s script.
