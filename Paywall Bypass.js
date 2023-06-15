@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         Regwall Element Blocker
 // @namespace    regwall-element-blocker
-// @version      1.1
+// @version      1.2
 // @description  Blocks rendering of elements with class or id containing "regwall"
 // @match        https://www.economist.com/*
 // @match        *://*.fortune.com/*
 // @run-at       document-start
+// @author       TIME
+// @license      MIT
 // @grant        none
 // ==/UserScript==
 
@@ -60,20 +62,8 @@
                 subscription.remove();
             });
         } else if (matchDomain('fortune.com')) {
-             // Remove paywallFade class from elements
-            let paywallFadeElements = wrapper.querySelectorAll('.paywallFade');
-            for (let i = 0; i < paywallFadeElements.length; i++) {
-                paywallFadeElements[i].classList.remove('paywallFade');
-            };
-
-            // Remove paywallActive class from elements with class 'paywall'
-            let paywallElements = wrapper.querySelectorAll('.paywall.paywallActive');
-            for (let i = 0; i < paywallElements.length; i++) {
-                paywallElements[i].classList.remove('paywallActive');
-            };
-
             // Hide elements with class 'tp-container-inner' by adding 'display: none' to their style attribute
-            let tpContainerInnerElements = wrapper.querySelectorAll('.tp-container-inner');
+            let tpContainerInnerElements = wrapper.querySelectorAll('.paywall-selector paywallFade');
             for (let i = 0; i < tpContainerInnerElements.length; i++) {
                 tpContainerInnerElements[i].style.display = 'none';
             };
