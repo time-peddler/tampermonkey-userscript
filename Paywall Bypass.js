@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Regwall Element Blocker
 // @namespace    regwall-element-blocker
-// @version      1.2
+// @version      1.3
 // @description  Blocks rendering of elements with class or id containing "regwall"
 // @match        https://www.economist.com/*
 // @match        *://*.fortune.com/*
@@ -67,6 +67,14 @@
             for (let i = 0; i < tpContainerInnerElements.length; i++) {
                 tpContainerInnerElements[i].style.display = 'none';
             };
+
+            // Set style attribute 'display: none' for lazy-transclude elements with domain 'fortune.com'
+            let lazyTranscludeElements = wrapper.querySelectorAll('lazy-transclude');
+            lazyTranscludeElements.forEach((element) => {
+                if (element.getAttribute('domain') === 'fortune.com') {
+                    element.style.display = 'none';
+                }
+            });
         };
 
         document.documentElement.innerHTML = "Removing the Ads...";
@@ -90,11 +98,10 @@
     window.stop();
     loadCustomPage();
 
-     function matchDomain(domains) {
+    function matchDomain(domains) {
         const hostname = window.location.hostname;
         if (typeof domains === 'string') { domains = [domains]; }
         return domains.some(domain => hostname === domain || hostname.endsWith('.' + domain));
     }
 
 })();
-
