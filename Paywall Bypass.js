@@ -63,9 +63,14 @@
             });
         } else if (matchDomain('fortune.com')) {
             // Hide elements with class 'tp-container-inner' by adding 'display: none' to their style attribute
-            let tpContainerInnerElements = wrapper.querySelectorAll('.paywall-selector paywallFade');
+            let tpContainerInnerElements = wrapper.querySelectorAll('tp-container-inner');
             for (let i = 0; i < tpContainerInnerElements.length; i++) {
                 tpContainerInnerElements[i].style.display = 'none';
+            };
+
+            let paywallFadeElements = wrapper.querySelectorAll('.paywall-selector paywallFade');
+            for (let i = 0; i < paywallFadeElements.length; i++) {
+                paywallFadeElements[i].style.display = 'none';
             };
 
             // Set style attribute 'display: none' for lazy-transclude elements with domain 'fortune.com'
