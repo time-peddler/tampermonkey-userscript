@@ -1,15 +1,18 @@
 // ==UserScript==
-// @name         Regwall Element Blocker
-// @namespace    regwall-element-blocker
+// @name         Paywall Element Blocker
+// @name:zh-CN   无涯拦截
+// @namespace    paywall-element-blocker
 // @version      1.3.2
 // @description  Blocks rendering of elements with class or id containing "regwall"
-// @match        https://www.economist.com/*
+// @match        *://*.economist.com/*
 // @match        *://*.fortune.com/*
+// @match        *://*.deadline.com/*
 // @run-at       document-start
 // @author       TIME
 // @license      MIT
 // @grant        none
 // ==/UserScript==
+
 
 (function() {
     'use strict';
@@ -32,42 +35,65 @@
         ];
         document.documentElement.innerHTML = states[this.readyState] || "Error Finding the Page!";
         if (this.readyState == 4 && this.status == 200) {
-            removeSubscription(this.responseText);
+            let newHtml = processHtml(this.responseText);
+            document.documentElement.innerHTML = newHtml.innerHTML;
         }
     };
 };
 
-let removeSubscription = (htmlContentStr) => {
+function processHtml(htmlContentStr) {
     let wrapper = document.createElement("DIV");
     wrapper.innerHTML = htmlContentStr;
-    if (matchDomain('economist.com')) {
-        removeElements(wrapper, ".paywall");
-        removeElements(wrapper, ".subscription-benefits");
-    } else if (matchDomain('fortune.com')) {
-        hideElementsBySelector(wrapper, 'tp-container-inner');
-        hideElementsBySelector(wrapper, '.paywall-selector paywallFade');
-        hideElementsBySelector(wrapper, 'lazy-transclude');
+    removeElementsWithAdClass(wrapper);
+    if (matchDomain('fortune.com')) {
+        imgHandler(wrapper);
+    } else if (matchDomain('economist.com')) {
+        console.log(htmlContentStr);
+    } else if (matchDomain('deadline.com')) {
+        imgHandler(wrapper);
     }
-    document.documentElement.innerHTML = "Removing the Ads...";
-    removeElements(wrapper, ".advert");
-    putNewPage(wrapper);
-};
+    return wrapper;
+}
 
-let removeElements = (wrapper, selector) => {
-    let elements = wrapper.querySelectorAll(selector);
-    elements.forEach((element) => {
+function imgHandler(wrapper) {
+    // Remove all img elements with src starting with "data:image"
+    var base64Images = wrapper.querySelectorAll('img[src^="data:image"]');
+    base64Images.forEach(function(img) {
+        img.remove();
+    });
+
+    // Update images` attribute of data-lazy-src to src
+    var imgTags = wrapper.querySelectorAll('img');
+    imgTags.forEach(function(img) {
+        var lazySrc = img.getAttribute('data-lazy-src');
+        if (lazySrc) {
+        img.setAttribute('src', lazySrc);
+        }
+    });
+
+    // Change all noscript elements to div
+    var noscripts = wrapper.querySelectorAll('noscript');
+    noscripts.forEach(function(noscript) {
+        var replacementDiv = document.createElement('div');
+        replacementDiv.innerHTML = noscript.innerHTML;
+        noscript.parentNode.replaceChild(replacementDiv, noscript);
+    });
+    return wrapper;
+}
+
+// Define a function to remove elements with class containing "adComponent" or "advert"
+function removeElementsWithAdClass(wrapper) {
+    // Select elements with class containing "adComponent" or "advert"
+    let sensitiveAdCharacters = ['adComponent','advert','admz','header-ad']
+    let selectors = sensitiveAdCharacters.map(className => `[class*="${className}"]`).join(', ');
+    var adElements = wrapper.querySelectorAll(selectors);
+    console.log('elements:',adElements);
+    // Remove the selected elements
+    adElements.forEach(function(element) {
         element.remove();
     });
-};
-
-let hideElementsBySelector = (wrapper, selector) => {
-    let elements = wrapper.querySelectorAll(selector);
-    elements.forEach((element) => {
-        element.style.display = 'none';
-    });
-};
-
-let putNewPage = (pageHtml) => document.documentElement.innerHTML = pageHtml.innerHTML;
+    return wrapper;
+}
 
 window.stop();
 loadCustomPage();
